@@ -74,8 +74,9 @@ class CloudStorageApplicationTests {
 		Assertions.assertEquals("You successfully signed up! Please continue to the login page.",signupPage.getSuccesAlertText());
 		Thread.sleep(3000);
 		signupPage.clickBackToLoginUrl();
-	
-	     loginPage.insertLoginCredentials("ogzhn","ogz123");
+		WebElement loginMarker2 = wait.until(webDriver -> webDriver.findElement(By.id("loginButton")));
+		loginPage.insertLoginCredentials("ogzhn","ogz123");
+		loginPage.submitLogin();
 	}
 
 }
