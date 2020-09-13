@@ -63,7 +63,7 @@ class CloudStorageApplicationTests {
 	@Test
 	public void signupAndLogin() throws InterruptedException {
 		driver.get(baseUrl + "/login");
-		WebDriverWait wait = new WebDriverWait(driver, 3);
+		WebDriverWait wait = new WebDriverWait(driver, 10);
 		loginPage = new LoginPage(driver);
 		WebElement loginMarker = wait.until(webDriver -> webDriver.findElement(By.id("loginButton")));
 		loginPage.clickSignup();
