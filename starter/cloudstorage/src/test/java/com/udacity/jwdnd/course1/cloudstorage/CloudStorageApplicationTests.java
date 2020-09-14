@@ -24,10 +24,6 @@ class CloudStorageApplicationTests {
 	private LoginPage loginPage;
 	private SignupPage signupPage;
 	private HomePage homePage;
-
-
-
-
 	private WebDriver driver;
 
 	@BeforeAll
