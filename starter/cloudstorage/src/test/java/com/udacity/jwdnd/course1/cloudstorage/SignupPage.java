@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -30,6 +31,9 @@ public class SignupPage {
     @FindBy(id="signupUserExistsAlert")
     private WebElement signupUserExistsAlert;
 
+    @FindBy(id="successBackToLogin")
+    private WebElement successBackToLogin;
+
     public SignupPage(WebDriver driver) {
         PageFactory.initElements(driver,this);
     }
@@ -48,16 +52,20 @@ public class SignupPage {
         return inputUsername.getAttribute("value");
     }
 
-    public void insertUser(String username,String password,String firstName,String lastName){
+    public void insertUser(WebDriver driver,String username,String password,String firstName,String lastName){
+        driver.findElement(By.id("inputPasswordSignup"));
         inputPassword.click();
         inputPassword.clear();
         inputPassword.sendKeys(password);
+        driver.findElement(By.id("inputFirstName"));
         inputFirstName.click();
         inputFirstName.clear();
         inputFirstName.sendKeys(firstName);
+        driver.findElement(By.id("inputLastName"));
         inputLastName.click();
         inputLastName.clear();
         inputLastName.sendKeys(lastName);
+        driver.findElement(By.id("inputUsernameSignup"));
         inputUsername.click();
         inputUsername.clear();
         inputUsername.sendKeys(username);
@@ -76,6 +84,11 @@ public class SignupPage {
 
     public String getUserExistsAlertText(){
         return signupUserExistsAlert.getText();
+    }
+
+    public void clickSuccessAlertBackToLogin(){
+
+     successBackToLogin.click();
     }
 
 }

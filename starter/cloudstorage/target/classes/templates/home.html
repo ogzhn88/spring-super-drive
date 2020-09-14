@@ -12,21 +12,21 @@
         <div class="container">
             <div id="logoutDiv">
                 <form th:action="@{/logout}" action="#" method="POST">
-                    <button type="submit" class="btn btn-secondary float-right">Logout</button>
+                    <button id="logoutButton" type="submit" class="btn btn-secondary float-right">Logout</button>
                 </form>
             </div>
             <div th:if="${param.error}" class="alert alert-danger">
                 <span>An error has been occured.Please try again</span>
             </div>
-            <div th:if="${param.csaved}" class="alert alert-success">
+            <div th:if="${param.csaved}" id="credentialSaved" class="alert alert-success">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span>Credential saved successfully</span>
             </div>
-            <div th:if="${param.cdeleted}" class="alert alert-success">
+            <div th:if="${param.cdeleted}" id="cdeleted" class="alert alert-success">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span>Credential deleted successfully</span>
             </div>
-            <div th:if="${param.cedited}" class="alert alert-success">
+            <div th:if="${param.cedited}" id="cedited" class="alert alert-success">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span>Credential edited successfully</span>
             </div>
@@ -43,15 +43,15 @@
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span>File deleted successfully</span>
             </div>
-            <div th:if="${param.nsaved}" class="alert alert-success">
+            <div th:if="${param.nsaved}" id="nsaved" class="alert alert-success">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span>Note saved successfully</span>
             </div>
-            <div th:if="${param.nedited}" class="alert alert-success">
+            <div th:if="${param.nedited}" id="nedited" class="alert alert-success">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <span>Note saved edited</span>
+                <span>Note edited successfully</span>
             </div>
-            <div th:if="${param.ndeleted}" class="alert alert-success">
+            <div th:if="${param.ndeleted}" id="ndeleted" class="alert alert-success">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <span>Note deleted succesfully</span>
             </div>
@@ -102,12 +102,12 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab">
-                        <button style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
+                        <button style="margin: 0.25em;" id="addNoteButton" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
                             + Add a New Note
                         </button>
 
                         <div class="table-responsive">
-                            <table class="table table-striped" id="userTable">
+                            <table class="table table-striped" id="noteTable">
                                 <thead>
                                     <tr>
                                         <th style="width: 20%" scope="col"></th>
@@ -118,8 +118,8 @@
                                 <tbody>
                                     <tr th:each="note : ${notes}">
                                         <td>
-                                            <button th:onclick="showNoteModal(this)" th:data-id="${note.noteid}" th:data-title="${note.notetitle}"  th:data-description="${note.notedescription}" type="button" class="btn btn-success">Edit</button>
-                                            <a th:href="@{/note/delete/}+${note.noteid}" class="btn btn-danger">Delete</a>
+                                            <button th:onclick="showNoteModal(this)" th:data-id="${note.noteid}" th:data-title="${note.notetitle}"  th:data-description="${note.notedescription}" type="button" class="noteEditBtn btn btn-success">Edit</button>
+                                            <a th:href="@{/note/delete/}+${note.noteid}"  class="btn btn-danger noteDeleteButton">Delete</a>
                                         </td>
                                         <th th:text="${note.notetitle}" scope="row">Example Note Title</th>
                                         <td th:text="${note.notedescription}">Example Note Description </td>
@@ -127,6 +127,8 @@
                                 </tbody>
                             </table>
                         </div>
+
+
 
                         <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
@@ -153,14 +155,14 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary" onclick="$('#noteSubmit').click();">Save changes</button>
+                                        <button type="button" id="saveNoteButton" class="btn btn-primary" onclick="$('#noteSubmit').click();">Save changes</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="nav-credentials" role="tabpanel" aria-labelledby="nav-credentials-tab">
-                        <button style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showCredentialModal()">
+                        <button style="margin: 0.25em;" type="button" class="btn btn-info float-right" id="addCrButton" onclick="showCredentialModal()">
                             + Add a New Credential
                         </button>
 
@@ -177,12 +179,12 @@
                                 <tbody>
                                 <tr th:each="credential: ${credentials}" >
                                     <td>
-                                        <button th:onclick="'showCredentialModal('+${credential.credentialid}+')'" onclick="showCredentialModal()" type="button" class="btn btn-success">Edit</button>
-                                        <a  th:href="@{/credential/delete/}+${credential.credentialid}" class="btn btn-danger confirm">Delete</a>
+                                        <button th:onclick="'showCredentialModal('+${credential.credentialid}+')'" onclick="showCredentialModal()" type="button" class="btn btn-success credentialEditBtn">Edit</button>
+                                        <a  th:href="@{/credential/delete/}+${credential.credentialid}" class="btn btn-danger deleteCredentialBtn">Delete</a>
                                     </td>
-                                    <th th:text="${credential.url}"scope="row">Example Credential URL</th>
-                                    <td th:text="${credential.username}">Example Credential Username</td>
-                                    <td th:text="${credential.password}">Example Credential Password</td>
+                                    <th class="urlTd"  th:text="${credential.url}"scope="row">Example Credential URL</th>
+                                    <td class="usernameTd" th:text="${credential.username}">Example Credential Username</td>
+                                    <td class="encpasswordTd" th:text="${credential.password}">Example Credential Password</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -212,12 +214,12 @@
                                                 <label for="note-title" class="col-form-label">Password</label>
                                                 <input type="text"  name= "password" class="form-control" id="credential-password" maxlength="30" required>
                                             </div>
-                                            <button id="credentialSubmit" type="submit" class="d-none"></button>
+                                            <button type="submit" id="credentialSubmit" class="d-none"></button>
                                         </form>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary" onclick="$('#credentialSubmit').click();">Save changes</button>
+                                        <button type="button" id="credentialSubmitButton"  class="btn btn-primary" onclick="$('#credentialSubmit').click();">Save changes</button>
                                     </div>
                                 </div>
                             </div>
@@ -295,16 +297,6 @@
                     alert("Error with code "+response.status);
                 }
             }
-
-            // Finding confirm class elements for confirmation popup
-            var elems = document.getElementsByClassName("confirm");
-            for(i=0;i<elems.length;i++) {
-               elems[i].addEventListener("click", function( e ){
-                   if(!confirm("Do you really want to do this?") ){
-                            e.preventDefault();
-                        }
-                          });
-                         }
                //Fading alerts out
                 $(document).ready(function() {
                     setTimeout(function() {

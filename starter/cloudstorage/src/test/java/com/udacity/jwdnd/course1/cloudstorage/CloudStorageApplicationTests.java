@@ -7,6 +7,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,8 @@ class CloudStorageApplicationTests {
 	private  String baseUrl;
 	private LoginPage loginPage;
 	private SignupPage signupPage;
+	private HomePage homePage;
+
 
 
 
@@ -29,13 +32,19 @@ class CloudStorageApplicationTests {
 
 	@BeforeAll
 	static void beforeAll() {
-		WebDriverManager.chromedriver().setup();
+		WebDriverManager.firefoxdriver().setup();
 	}
 
 	@BeforeEach
 	public void beforeEach() {
-		this.driver = new ChromeDriver();
+		this.driver = new FirefoxDriver();
 		baseUrl = "http://localhost:" + port;
+		signupPage = new SignupPage(driver);
+		loginPage = new LoginPage(driver);
+		homePage = new HomePage(driver);
+		driver.get(baseUrl + "/signup");
+		signupPage.insertUser(driver,"admin","admin","admin","admin");
+		signupPage.submitSignup();
 
 	}
 
@@ -61,22 +70,80 @@ class CloudStorageApplicationTests {
 		Assertions.assertEquals("Sign Up",driver.getTitle());
 	}
 	@Test
-	public void signupAndLogin() throws InterruptedException {
+	public void signupLoginAndLogout() {
 		driver.get(baseUrl + "/login");
-		WebDriverWait wait = new WebDriverWait(driver, 10);
-		loginPage = new LoginPage(driver);
-		WebElement loginMarker = wait.until(webDriver -> webDriver.findElement(By.id("loginButton")));
 		loginPage.clickSignup();
-		signupPage = new SignupPage(driver);
-		Thread.sleep(2000);
-		signupPage.insertUser("ogzhn","ogz123","oguzhan","unalir");
+		signupPage.insertUser(driver,"ogzhn","ogz123","oguzhan","unalir");
 		signupPage.submitSignup();
 		Assertions.assertEquals("You successfully signed up! Please continue to the login page.",signupPage.getSuccesAlertText());
-		Thread.sleep(3000);
 		signupPage.clickBackToLoginUrl();
-		WebElement loginMarker2 = wait.until(webDriver -> webDriver.findElement(By.id("loginButton")));
 		loginPage.insertLoginCredentials("ogzhn","ogz123");
 		loginPage.submitLogin();
+		Assertions.assertEquals("Home", driver.getTitle());
+		homePage.clickLogoutButton();
+	}
+	@Test
+	public void createEditAndDeleteNote() {
+		driver.get(baseUrl + "/login");
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+        loginPage.insertLoginCredentials("admin","admin");
+        loginPage.submitLogin();
+        homePage.clickNavTab();
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("addNoteButton"))));
+		homePage.clickaddNoteButton();
+		homePage.insertNote("MY NOTE","MY DESCRIPTION");
+		homePage.clickSaveNotButton();
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("nsaved"))));
+		Assertions.assertEquals("Note saved successfully",homePage.getNoteSavedAlertText());
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("noteTable"))));
+		Assertions.assertEquals(true,homePage.noteExistsInTable("MY NOTE","MY DESCRIPTION"));
+		homePage.clickNoteEditButton("MY NOTE","MY DESCRIPTION");
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("saveNoteButton"))));
+		homePage.insertNote("MY EDITED NOTE","MY NEW DESCRIPTION");
+		homePage.clickSaveNotButton();
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("nedited"))));
+		Assertions.assertEquals("Note edited successfully",homePage.getNoteEditedAlertText());
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("noteTable"))));
+		homePage.clickLatestDeleteNoteButton();
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("ndeleted"))));
+		Assertions.assertEquals("Note deleted succesfully",homePage.getNoteDeletedAlertText());
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("noteTable"))));
+		Assertions.assertEquals(false,homePage.noteExistsInTable("MY EDITED NOTE","MY NEW DESCRIPTION"));
+	}
+
+	@Test
+	public void createEditAndDeleteCredentials()  {
+		driver.get(baseUrl + "/login");
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		loginPage.insertLoginCredentials("admin","admin");
+		loginPage.submitLogin();
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("nav-credentials-tab"))));
+		homePage.clickCredentialsTab();
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("addCrButton"))));
+		homePage.clickCredentialsAddButton();
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("credentialSubmitButton"))));
+        homePage.insertCredentials("www.dummypage.com","oğuzhan","123");
+        homePage.clickCredentialSubmitButton();
+		wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("credentialSaved"))));
+		Assertions.assertEquals("Credential saved successfully",homePage.getCredentialSaveSuccessAlertText());
+		wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("credentialTable"))));
+		Assertions.assertEquals(true,homePage.credentialExistsInTableWithEncPass("www.dummypage.com","oğuzhan","123"));
+		homePage.clickCredentialEditButton("www.dummypage.com","oğuzhan","123");
+		Assertions.assertEquals(true,homePage.checkPasswordisVisibleinModal("123"));
+		wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("credentialSubmitButton"))));
+		homePage.insertCredentials("www.newpage.com","udacity","455");
+		homePage.clickCredentialSubmitButton();
+		wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("credentialTable"))));
+		Assertions.assertEquals(true,homePage.credentialExistsInTableWithEncPass("www.newpage.com","udacity","455"));
+		wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("cedited"))));
+		Assertions.assertEquals("Credential edited successfully",homePage.getCredentialEditSuccessAlertText());
+		wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("credentialTable"))));
+		homePage.clickCredentialDeleteButton("www.newpage.com","udacity","455");
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("cdeleted"))));
+		Assertions.assertEquals("Credential deleted successfully",homePage.getCredentialDeleteSuccessAlertText());
+		wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("credentialTable"))));
+		Assertions.assertEquals(false,homePage.credentialExistsInTableWithEncPass("www.newpage.com","udacity","455"));
+
 	}
 
 }
