@@ -8,6 +8,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Controller
 public class SignupController {
@@ -21,7 +25,7 @@ public class SignupController {
     }
 
     @PostMapping("/signup/save")
-        public String saveUser(@ModelAttribute("newUser") User newUser,Model model){
+        public String saveUser(@ModelAttribute("newUser") User newUser){
        if (userService.getUserByUserName(newUser.getUsername()) != null){
            return "redirect:/signup?userexists";
        }
@@ -29,7 +33,8 @@ public class SignupController {
 
         try {
             userService.createUser(newUser);
-            return "redirect:/signup?success";
+
+            return "redirect:/login?signupSuccess";
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -67,12 +67,13 @@ class CloudStorageApplicationTests {
 	}
 	@Test
 	public void signupLoginAndLogout() {
+		WebDriverWait wait = new WebDriverWait(driver, 10);
 		driver.get(baseUrl + "/login");
 		loginPage.clickSignup();
 		signupPage.insertUser(driver,"ogzhn","ogz123","oguzhan","unalir");
 		signupPage.submitSignup();
-		Assertions.assertEquals("You successfully signed up! Please continue to the login page.",signupPage.getSuccesAlertText());
-		signupPage.clickBackToLoginUrl();
+		wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.id("signupSuccessAlert"))));
+		Assertions.assertEquals("You successfully signed up! You can login below.",loginPage.getSuccesAlertText());
 		loginPage.insertLoginCredentials("ogzhn","ogz123");
 		loginPage.submitLogin();
 		Assertions.assertEquals("Home", driver.getTitle());

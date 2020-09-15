@@ -22,17 +22,11 @@ public class SignupPage {
     @FindBy(id="signupSubmitButton")
     private WebElement signupSubmitButton;
 
-    @FindBy(id="backToLoginUrl")
-    private WebElement backToLoginUrl;
-
-    @FindBy(id="signupSuccessAlert")
-    private WebElement signupSuccessAlert;
-
     @FindBy(id="signupUserExistsAlert")
     private WebElement signupUserExistsAlert;
 
-    @FindBy(id="successBackToLogin")
-    private WebElement successBackToLogin;
+
+
 
     public SignupPage(WebDriver driver) {
         PageFactory.initElements(driver,this);
@@ -74,21 +68,10 @@ public class SignupPage {
         signupSubmitButton.click();
     }
 
-    public void clickBackToLoginUrl(){
-        backToLoginUrl.click();
-    }
-
-    public String getSuccesAlertText(){
-       return signupSuccessAlert.getText();
-    }
-
     public String getUserExistsAlertText(){
         return signupUserExistsAlert.getText();
     }
 
-    public void clickSuccessAlertBackToLogin(){
 
-     successBackToLogin.click();
-    }
 
 }

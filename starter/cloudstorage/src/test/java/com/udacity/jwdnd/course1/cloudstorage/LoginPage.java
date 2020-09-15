@@ -26,6 +26,11 @@ public class LoginPage {
     @FindBy(id="logoutSuccessAlert")
     private WebElement logoutSuccessAlert;
 
+    @FindBy(id="signupSuccessAlert")
+    private WebElement signupSuccessAlert;
+
+
+
     public LoginPage(WebDriver driver) {
         PageFactory.initElements(driver,this);
     }
@@ -59,5 +64,10 @@ public class LoginPage {
     public String getLogoutSuccessMessage(){
         return logoutSuccessAlert.getText();
     }
+
+    public String getSuccesAlertText(){
+        return signupSuccessAlert.getText();
+    }
+
 
 }
